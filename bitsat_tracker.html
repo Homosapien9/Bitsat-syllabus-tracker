@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BITSAT 2026 — Syllabus Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0d12;
+  --surface: #141419;
+  --card: #1a1a22;
+  --border: rgba(255,255,255,0.07);
+  --border-hover: rgba(255,255,255,0.14);
+  --text: #f0f0f0;
+  --muted: #888;
+  --dim: #555;
+  --phy: #4fa3e0;
+  --chem: #3ec99a;
+  --math: #f07050;
+  --eng: #c07de0;
+  --lr: #f0b840;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+
+/* Background grid */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:48px 48px;pointer-events:none;z-index:0
+}
+
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:2.5rem 1.5rem 4rem}
+
+/* Header */
+.hero{margin-bottom:2.5rem}
+.hero-tag{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:0.75rem;display:flex;align-items:center;gap:8px}
+.hero-tag::before{content:'';width:20px;height:1px;background:var(--muted);display:inline-block}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.05;letter-spacing:-0.02em;margin-bottom:0.5rem}
+.hero h1 span{color:var(--muted)}
+.hero-sub{font-size:14px;color:var(--muted);font-weight:300}
+
+/* Overall progress */
+.overall-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:2rem;display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center}
+.overall-left{}
+.overall-pct{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;line-height:1;margin-bottom:0.25rem}
+.overall-label{font-size:13px;color:var(--muted)}
+.overall-bar-track{height:6px;background:rgba(255,255,255,0.07);border-radius:99px;margin-top:1rem;overflow:hidden}
+.overall-bar{height:6px;border-radius:99px;background:linear-gradient(90deg,#4fa3e0,#3ec99a,#f0b840);transition:width 0.5s cubic-bezier(.4,0,.2,1)}
+.overall-stats{display:flex;flex-direction:column;gap:0.5rem;text-align:right}
+.stat-pill{font-family:'DM Mono',monospace;font-size:12px;padding:4px 12px;border-radius:99px;border:1px solid var(--border)}
+
+/* Tabs */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem}
+.tab{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.05em;padding:6px 14px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all 0.2s}
+.tab:hover{border-color:var(--border-hover);color:var(--text)}
+.tab.active{border-color:var(--phy);background:rgba(79,163,224,0.1);color:var(--text)}
+.tab[data-id="all"].active{border-color:var(--muted);background:rgba(255,255,255,0.05)}
+.tab[data-id="phy"].active{border-color:var(--phy);background:rgba(79,163,224,0.1)}
+.tab[data-id="chem"].active{border-color:var(--chem);background:rgba(62,201,154,0.1)}
+.tab[data-id="math"].active{border-color:var(--math);background:rgba(240,112,80,0.1)}
+.tab[data-id="eng"].active{border-color:var(--eng);background:rgba(192,125,224,0.1)}
+.tab[data-id="lr"].active{border-color:var(--lr);background:rgba(240,184,64,0.1)}
+
+/* Reset */
+.reset-btn{margin-left:auto;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.05em;padding:6px 14px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer;transition:all 0.2s}
+.reset-btn:hover{border-color:rgba(255,80,80,.3);color:rgba(255,100,100,.8)}
+
+/* Subject block */
+.subject-block{margin-bottom:12px;border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color 0.2s}
+.subject-block:hover{border-color:var(--border-hover)}
+
+.subj-header{padding:1rem 1.25rem;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto auto auto;align-items:center;gap:12px;background:var(--surface)}
+.subj-header:hover .subj-name{opacity:0.8}
+.color-bar{width:4px;height:36px;border-radius:3px;flex-shrink:0}
+.subj-info{min-width:0}
+.subj-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;letter-spacing:-0.01em}
+.subj-qs{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px}
+.subj-progress-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.subj-pct{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted)}
+.subj-bar-track{width:80px;height:3px;background:rgba(255,255,255,0.07);border-radius:99px;overflow:hidden}
+.subj-bar{height:3px;border-radius:99px;transition:width 0.4s ease}
+.chevron{color:var(--dim);font-size:12px;transition:transform 0.25s;flex-shrink:0}
+.chevron.open{transform:rotate(180deg)}
+
+/* Topics */
+.topics-panel{display:none;padding:0.5rem 0 0;border-top:1px solid var(--border)}
+.topics-panel.open{display:block}
+
+.topic-row{padding:0.875rem 1.25rem;border-bottom:1px solid var(--border)}
+.topic-row:last-child{border-bottom:none}
+.topic-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;cursor:pointer;width:fit-content}
+.topic-header:hover .topic-name{opacity:0.7}
+.topic-cb{width:14px;height:14px;border:1px solid var(--border-hover);border-radius:4px;background:transparent;cursor:pointer;flex-shrink:0;accent-color:#7F77DD}
+.topic-name{font-size:13px;font-weight:500;color:var(--text)}
+.topic-count{font-family:'DM Mono',monospace;font-size:10px;color:var(--dim);margin-left:2px}
+
+/* Sub chips */
+.subs{display:flex;flex-wrap:wrap;gap:5px;padding-left:22px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:4px 11px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all 0.15s;user-select:none;font-family:'DM Sans',sans-serif}
+.chip:hover{border-color:var(--border-hover);color:var(--text)}
+.chip.done{border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:var(--text)}
+.chip-dot{width:6px;height:6px;border-radius:50%;border:1px solid var(--dim);flex-shrink:0;transition:all 0.15s}
+.chip.done .chip-dot{border-color:transparent}
+
+/* Subject-specific chip done colors */
+.chip.done.s-phy .chip-dot{background:var(--phy)}
+.chip.done.s-chem .chip-dot{background:var(--chem)}
+.chip.done.s-math .chip-dot{background:var(--math)}
+.chip.done.s-eng .chip-dot{background:var(--eng)}
+.chip.done.s-lr .chip-dot{background:var(--lr)}
+
+/* Footer */
+.footer{text-align:center;margin-top:2.5rem;font-family:'DM Mono',monospace;font-size:11px;color:var(--dim)}
+.save-toast{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-family:'DM Mono',monospace;color:var(--chem);opacity:0;transition:opacity 0.3s;margin-left:12px}
+.save-toast.show{opacity:1}
+
+/* Animations */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.subject-block{animation:fadeInUp 0.3s ease both}
+.subject-block:nth-child(1){animation-delay:.05s}
+.subject-block:nth-child(2){animation-delay:.1s}
+.subject-block:nth-child(3){animation-delay:.15s}
+.subject-block:nth-child(4){animation-delay:.2s}
+.subject-block:nth-child(5){animation-delay:.25s}
+
+@media(max-width:600px){
+  .overall-card{grid-template-columns:1fr}
+  .overall-stats{flex-direction:row;text-align:left}
+  .subj-bar-track{width:60px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-tag">Syllabus Tracker</div>
+    <h1>BITSAT <span>2026</span></h1>
+    <div class="hero-sub">Physics · Chemistry · Mathematics · English · Logical Reasoning</div>
+  </div>
+
+  <div class="overall-card">
+    <div class="overall-left">
+      <div class="overall-pct" id="overall-pct">0%</div>
+      <div class="overall-label">Overall completion</div>
+      <div class="overall-bar-track"><div class="overall-bar" id="overall-bar" style="width:0%"></div></div>
+    </div>
+    <div class="overall-stats">
+      <div class="stat-pill" id="done-label">0 / 0 subtopics</div>
+      <div class="stat-pill" id="topics-label">0 topics done</div>
+      <span class="save-toast" id="save-toast">✓ saved</span>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem">
+    <div class="tabs" id="tabs" style="margin-bottom:0"></div>
+    <button class="reset-btn" onclick="resetAll()">↺ Reset</button>
+  </div>
+
+  <div id="content"></div>
+
+  <div class="footer">Progress auto-saved to browser · BITSAT 2026 Official Syllabus</div>
+</div>
+
+<script>
+const SUBJECTS = [
+  {
+    id:'phy', name:'Physics', color:'var(--phy)', questions:30,
+    topics:[
+      {name:'Units & Measurement', subs:['SI units','Dimensional analysis','Errors & accuracy','Significant figures','Dimensional formulae']},
+      {name:'Kinematics', subs:['Motion in 1D','Graphs of motion','Motion in 2D','Projectile motion','Relative motion & velocity']},
+      {name:'Laws of Motion', subs:["Newton's laws",'Free body diagrams','Friction (static & kinetic)','Circular motion','Pseudo forces']},
+      {name:'Work, Energy & Power', subs:['Work-energy theorem','Conservative forces','Potential energy','Collisions','Power']},
+      {name:'Rotational Motion', subs:['Moment of inertia','Torque & angular momentum','Conservation of angular momentum','Rolling motion','Equilibrium of rigid bodies']},
+      {name:'Gravitation', subs:["Kepler's laws",'Gravitational field & potential','Orbital & escape velocity','Satellites','Gravitational PE']},
+      {name:'Properties of Matter', subs:['Elasticity & stress-strain','Viscosity & Stokes law','Surface tension','Archimedes principle','Bernoulli equation']},
+      {name:'Thermodynamics', subs:['Zeroth & first law','Internal energy','Second law & entropy','Carnot engine','Heat transfer modes']},
+      {name:'Kinetic Theory of Gases', subs:['Gas laws','Ideal gas equation','RMS & average speed','Degrees of freedom','Specific heat ratio γ']},
+      {name:'Oscillations & Waves', subs:['SHM equations','Energy in SHM','Damped oscillations','Wave motion','Doppler effect']},
+      {name:'Electrostatics', subs:["Coulomb's law",'Electric field & flux',"Gauss's law",'Electric potential & PE','Capacitors & dielectrics']},
+      {name:'Current Electricity', subs:["Ohm's law",'Combination of cells',"Kirchhoff's laws",'Wheatstone bridge','Potentiometer']},
+      {name:'Magnetic Effects of Current', subs:['Biot-Savart law',"Ampere's law",'Solenoid & toroid','Force on moving charge','Moving coil galvanometer']},
+      {name:'EM Induction & AC', subs:["Faraday's & Lenz's laws",'Self & mutual inductance','AC circuits (LCR)','Resonance in AC','Transformers']},
+      {name:'Optics', subs:['Reflection & refraction','Lenses & mirrors','Total internal reflection','Interference','Diffraction & polarisation']},
+      {name:'Modern Physics', subs:['Photoelectric effect','Bohr atomic model','X-rays','Nuclear reactions','Radioactivity & decay']}
+    ]
+  },
+  {
+    id:'chem', name:'Chemistry', color:'var(--chem)', questions:30,
+    topics:[
+      {name:'Basic Concepts & Mole', subs:['Atomic theory','Mole concept','Stoichiometry','Limiting reagent','Percentage composition']},
+      {name:'States of Matter', subs:['Gas laws','Real gases','Liquids & vapour pressure','Crystal structures','Amorphous solids']},
+      {name:'Atomic Structure', subs:["Bohr's model",'Quantum numbers','Orbital shapes','Aufbau & Hund\'s rule','Electronic configuration']},
+      {name:'Chemical Bonding', subs:['Ionic bonding','Covalent bonding & VSEPR','Hybridisation','Molecular orbital theory','Hydrogen bonding']},
+      {name:'Thermodynamics', subs:['Enthalpy & Hess law','Entropy & spontaneity','Gibbs free energy','Kirchhoff equation','Bond enthalpy']},
+      {name:'Equilibrium', subs:['Law of mass action','Kp, Kc, Kx',"Le Chatelier's principle",'pH & buffer solutions','Solubility product Ksp']},
+      {name:'Electrochemistry', subs:['Redox reactions','Electrochemical cells','Nernst equation','Electrolysis & Faraday','Corrosion']},
+      {name:'Chemical Kinetics', subs:['Rate laws & order','Integrated rate equations','Arrhenius equation','Activation energy','Catalysis types']},
+      {name:'Solutions', subs:['Types of solutions','Raoult\'s law','Colligative properties','Osmosis & van\'t Hoff','Abnormal molar mass']},
+      {name:'Surface Chemistry', subs:['Adsorption types','Catalysis & promoters','Colloids & sols','Emulsions','Coagulation & Tyndall']},
+      {name:'Periodic Table', subs:['Periodic law','Atomic radius trends','Ionisation energy','Electronegativity','Diagonal relationship']},
+      {name:'s-Block Elements', subs:['Alkali metals','Na & K compounds','Alkaline earth metals','Ca & Mg chemistry','Li & Be anomalies']},
+      {name:'p-Block Elements', subs:['Group 13 (Al)','Group 14 (C, Si)','Group 15 (N, P)','Group 16 (O, S)','Group 17 & 18']},
+      {name:'d & f-Block Elements', subs:['Transition metal properties','Variable oxidation states','KMnO₄ & K₂Cr₂O₇','Magnetic properties','Lanthanides & actinides']},
+      {name:'Coordination Compounds', subs:["Werner's theory",'Ligands & denticity','IUPAC nomenclature','Geometric & optical isomerism','Crystal field theory']},
+      {name:'Organic Basics & Hydrocarbons', subs:['IUPAC nomenclature','Isomerism & effects','Alkane reactions','Alkene & alkyne reactions','Arenes & benzene']},
+      {name:'Functional Group Chemistry', subs:['Haloalkanes & haloarenes','Alcohols, phenols & ethers','Aldehydes & ketones','Carboxylic acids & derivatives','Amines & diazonium']},
+      {name:'Biomolecules & Polymers', subs:['Carbohydrates','Proteins & amino acids','Nucleic acids (DNA, RNA)','Enzymes & vitamins','Polymer types & uses']}
+    ]
+  },
+  {
+    id:'math', name:'Mathematics', color:'var(--math)', questions:40,
+    topics:[
+      {name:'Complex Numbers', subs:['Algebraic form & conjugate','Modulus & argument','Polar & Euler form','De Moivre\'s theorem','nth roots of unity']},
+      {name:'Quadratic Equations', subs:['Nature of roots','Sum & product of roots','Symmetric functions','Quadratic inequalities','Equations reducible to quadratic']},
+      {name:'Sequences & Series', subs:['AP — nth term & sum','GP — nth term & sum','Special series Σn, Σn²','AM–GM–HM inequalities','Infinite GP sum']},
+      {name:'Permutations & Combinations', subs:['Fundamental counting','Permutations','Combinations','Inclusion-exclusion','Circular permutations']},
+      {name:'Binomial Theorem', subs:['Binomial expansion','General & middle term','Greatest term','Binomial coefficient properties','Multinomial basics']},
+      {name:'Matrices & Determinants', subs:['Matrix operations','Determinant & properties','Adjoint & inverse','Cramer\'s rule','Rank of matrix']},
+      {name:'Trigonometry', subs:['Ratios & identities','Compound & multiple angles','Inverse trig functions','Trig equations','Heights & distances']},
+      {name:'Coordinate Geometry 2D', subs:['Straight lines (all forms)','Circles','Parabola','Ellipse','Hyperbola']},
+      {name:'Differential Calculus', subs:['Limits & forms','Continuity & differentiability','Differentiation rules','Maxima & minima','Rolle\'s & LMVT']},
+      {name:'Integral Calculus', subs:['Standard integrals','Integration by parts & substitution','Partial fractions','Definite integral properties','Area under curves']},
+      {name:'Differential Equations', subs:['Order & degree','Variable separable','Homogeneous equations','Linear DEs','Applications of DEs']},
+      {name:'Vectors & 3D Geometry', subs:['Vector algebra','Dot & cross products','Lines in 3D','Planes in 3D','Distance formulas in 3D']},
+      {name:'Statistics & Probability', subs:['Mean, median, mode','Variance & SD','Classical probability','Conditional probability & Bayes','Binomial distribution']}
+    ]
+  },
+  {
+    id:'eng', name:'English', color:'var(--eng)', questions:10,
+    topics:[
+      {name:'Grammar', subs:['Parts of speech','Tenses & voice','Articles & prepositions','Subject-verb agreement','Sentence correction']},
+      {name:'Vocabulary', subs:['Synonyms & antonyms','Analogies & word pairs','One-word substitution','Idioms & phrases','Word in context']},
+      {name:'Reading Comprehension', subs:['Main idea','Inference questions','Tone & purpose','Vocabulary from context','Passage summary']},
+      {name:'Writing & Verbal Ability', subs:['Para jumbles','Cloze test','Error spotting','Fill in the blanks','Sentence improvement']}
+    ]
+  },
+  {
+    id:'lr', name:'Logical Reasoning', color:'var(--lr)', questions:20,
+    topics:[
+      {name:'Verbal Reasoning', subs:['Analogy & classification','Coding-decoding','Number & letter series','Blood relations','Direction & distance']},
+      {name:'Non-Verbal Reasoning', subs:['Figure series','Mirror & water images','Cube & dice problems','Paper folding','Pattern recognition']},
+      {name:'Logical Deduction', subs:['Syllogisms','Logical consistency','Assumptions & conclusions','Cause & effect','Statement & argument']},
+      {name:'Data Interpretation', subs:['Tables','Bar & pie charts','Line graphs','Mixed graphs','Logical puzzles']}
+    ]
+  }
+];
+
+let state = {};
+
+function totalSubs(){return SUBJECTS.reduce((a,s)=>a+s.topics.reduce((b,t)=>b+t.subs.length,0),0)}
+function doneSubs(){return Object.values(state).filter(Boolean).length}
+function doneTopics(){
+  let n=0;
+  SUBJECTS.forEach(s=>s.topics.forEach(t=>{if(t.subs.every((_,i)=>state[`${s.id}:${t.name}:${i}`]))n++}));
+  return n;
+}
+function totalTopics(){return SUBJECTS.reduce((a,s)=>a+s.topics.length,0)}
+function subjectDone(sid){
+  const s=SUBJECTS.find(x=>x.id===sid);
+  return s.topics.reduce((a,t)=>a+t.subs.filter((_,i)=>state[`${sid}:${t.name}:${i}`]).length,0);
+}
+function subjectTotal(sid){return SUBJECTS.find(x=>x.id===sid).topics.reduce((a,t)=>a+t.subs.length,0)}
+
+function updateUI(){
+  const total=totalSubs(),done=doneSubs(),pct=total?Math.round(done/total*100):0;
+  document.getElementById('overall-pct').textContent=pct+'%';
+  document.getElementById('overall-bar').style.width=pct+'%';
+  document.getElementById('done-label').textContent=done+' / '+total+' subtopics';
+  document.getElementById('topics-label').textContent=doneTopics()+' / '+totalTopics()+' topics';
+
+  SUBJECTS.forEach(s=>{
+    const d=subjectDone(s.id),t=subjectTotal(s.id);
+    const bar=document.getElementById('sbar-'+s.id);
+    const prog=document.getElementById('sprog-'+s.id);
+    if(bar) bar.style.width=(t?Math.round(d/t*100):0)+'%';
+    if(prog) prog.textContent=Math.round(d/t*100)+'%';
+    s.topics.forEach(topic=>{
+      const cb=document.getElementById('tcb-'+CSS.escape(s.id+':'+topic.name));
+      if(cb) cb.checked=topic.subs.every((_,i)=>state[`${s.id}:${topic.name}:${i}`]);
+    });
+  });
+}
+
+let saveTimer;
+function save(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    try{localStorage.setItem('bitsat2026',JSON.stringify(state));}catch(e){}
+    const t=document.getElementById('save-toast');
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),1800);
+  },500);
+}
+
+function toggleSub(sid,topic,i){
+  const key=`${sid}:${topic}:${i}`;
+  state[key]=!state[key];
+  const chip=document.getElementById('chip-'+CSS.escape(key));
+  if(chip){chip.classList.toggle('done',state[key]);}
+  updateUI();save();
+}
+
+function toggleTopic(sid,topicName,subsLen){
+  const keys=Array.from({length:subsLen},(_,i)=>`${sid}:${topicName}:${i}`);
+  const anyOff=keys.some(k=>!state[k]);
+  keys.forEach((k,i)=>{
+    state[k]=anyOff;
+    const chip=document.getElementById('chip-'+CSS.escape(k));
+    if(chip) chip.classList.toggle('done',anyOff);
+  });
+  updateUI();save();
+}
+
+function resetAll(){
+  if(!confirm('Reset all progress? This cannot be undone.')) return;
+  state={};
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('done'));
+  document.querySelectorAll('.topic-cb').forEach(c=>c.checked=false);
+  updateUI();save();
+}
+
+let activeTab='all';
+function renderTabs(){
+  const wrap=document.getElementById('tabs');
+  const tabs=[{id:'all',name:'All'},...SUBJECTS.map(s=>({id:s.id,name:s.name}))];
+  wrap.innerHTML=tabs.map(t=>`<button class="tab${t.id===activeTab?' active':''}" data-id="${t.id}" onclick="switchTab('${t.id}')">${t.name}</button>`).join('');
+}
+
+function switchTab(id){activeTab=id;renderTabs();renderContent();}
+
+function renderContent(){
+  const wrap=document.getElementById('content');
+  const subs=activeTab==='all'?SUBJECTS:SUBJECTS.filter(s=>s.id===activeTab);
+  wrap.innerHTML=subs.map(s=>`
+    <div class="subject-block">
+      <div class="subj-header" onclick="togglePanel('${s.id}')">
+        <div class="color-bar" style="background:${s.color}"></div>
+        <div class="subj-info">
+          <div class="subj-name">${s.name}</div>
+          <div class="subj-qs">// ${s.questions} questions · ${subjectTotal(s.id)} subtopics</div>
+        </div>
+        <div class="subj-progress-wrap">
+          <div class="subj-pct" id="sprog-${s.id}">0%</div>
+          <div class="subj-bar-track"><div class="subj-bar" id="sbar-${s.id}" style="width:0%;background:${s.color}"></div></div>
+        </div>
+        <div class="chevron${activeTab!=='all'?' open':''}" id="chev-${s.id}">▼</div>
+      </div>
+      <div class="topics-panel${activeTab!=='all'?' open':''}" id="panel-${s.id}">
+        ${s.topics.map(t=>`
+          <div class="topic-row">
+            <div class="topic-header" onclick="toggleTopic('${s.id}','${t.name}',${t.subs.length})">
+              <input type="checkbox" class="topic-cb" id="tcb-${s.id+':'+t.name}" onclick="event.stopPropagation();toggleTopic('${s.id}','${t.name}',${t.subs.length})">
+              <span class="topic-name">${t.name}</span>
+              <span class="topic-count">${t.subs.length}</span>
+            </div>
+            <div class="subs">
+              ${t.subs.map((sub,i)=>{
+                const key=`${s.id}:${t.name}:${i}`;
+                const done=state[key]||false;
+                return `<div class="chip s-${s.id}${done?' done':''}" id="chip-${key}" onclick="toggleSub('${s.id}','${t.name}',${i})"><span class="chip-dot"></span>${sub}</div>`;
+              }).join('')}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  updateUI();
+}
+
+function togglePanel(sid){
+  const panel=document.getElementById('panel-'+sid);
+  const chev=document.getElementById('chev-'+sid);
+  panel.classList.toggle('open');
+  chev.classList.toggle('open');
+}
+
+function init(){
+  try{const s=localStorage.getItem('bitsat2026');if(s)state=JSON.parse(s);}catch(e){state={};}
+  renderTabs();
+  renderContent();
+}
+init();
+</script>
+</body>
+</html>
